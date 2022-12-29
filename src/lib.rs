@@ -17,7 +17,7 @@ pub struct KataResponse;
 #[derive(Serialize)]
 pub struct KataQuery;
 
-pub fn start(mut cmd: Command) -> (impl Sink<KataQuery>, impl Stream<Item = KataResponse>) {
+pub fn start(cmd: &mut Command) -> (impl Sink<KataQuery>, impl Stream<Item = KataResponse>) {
     let mut handle = cmd
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
