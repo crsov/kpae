@@ -1,3 +1,4 @@
+use std::error::Error;
 use std::process::Stdio;
 
 use bytes::BytesMut;
@@ -17,7 +18,12 @@ pub struct KataResponse;
 #[derive(Serialize, Clone, Debug)]
 pub struct KataQuery;
 
-pub fn start(cmd: &mut Command) -> (impl Sink<KataQuery>, impl Stream<Item = KataResponse>) {
+pub fn start(
+    cmd: &mut Command,
+) -> (
+    impl Sink<KataQuery, Error = impl Error>,
+    impl Stream<Item = KataResponse>,
+) {
     let mut handle = cmd
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
