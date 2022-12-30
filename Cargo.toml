@@ -9,6 +9,7 @@ KataGo Parallel Analysis Engine (https://github.com/lightvector/KataGo/blob/mast
 
 [dependencies]
 bytes = "1.3.0"
+derive_builder = "0.12.0"
 futures-core = "0.3.25"
 futures-sink = "0.3.25"
 futures-util = "0.3.25"
