@@ -11,10 +11,10 @@ use serde::{Deserialize, Serialize};
 use tokio_stream::wrappers::LinesStream;
 use tokio_util::codec::{Encoder, FramedWrite};
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct KataResponse;
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone, Debug)]
 pub struct KataQuery;
 
 pub fn start(cmd: &mut Command) -> (impl Sink<KataQuery>, impl Stream<Item = KataResponse>) {
