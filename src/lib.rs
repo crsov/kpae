@@ -21,32 +21,53 @@ pub struct KataResponse;
 #[serde(rename_all = "camelCase")]
 pub struct KataQuery {
     id: String,
+    #[builder(default)]
     initial_stones: Option<Vec<(Player, String)>>,
     moves: Vec<(Player, String)>,
     // Passing custom rule set is not yet supported, only shorthands can be passed at the moment
     rules: Rules,
+    #[builder(default)]
     initial_player: Option<Player>,
+    #[builder(default)]
     komi: Option<f32>,
+    #[builder(default)]
     white_handicap_bonus: Option<WhiteHandicapBonus>,
     board_x_size: u8,
     board_y_size: u8,
+    #[builder(default)]
     analyze_turns: Option<Vec<u16>>,
+    #[builder(default)]
     max_visits: Option<u32>,
+    #[builder(default)]
     root_policy_temperature: Option<f32>,
+    #[builder(default)]
     root_fpu_reduction_max: Option<f32>,
+    #[builder(default)]
     anaysis_pv_len: Option<u16>,
+    #[builder(default)]
     include_ownership: Option<bool>,
+    #[builder(default)]
     inlcude_ownership_stdev: Option<bool>,
+    #[builder(default)]
     include_moves_ownership: Option<bool>,
+    #[builder(default)]
     include_moves_ownership_stdev: Option<bool>,
+    #[builder(default)]
     include_policy: Option<bool>,
+    #[builder(default)]
     include_pv_visits: Option<bool>,
+    #[builder(default)]
     avoid_moves: Option<Vec<MoveGroup>>,
+    #[builder(default)]
     allow_moves: Option<[MoveGroup; 1]>,
     // TODO: Maybe use HashMap here instead of Value?
+    #[builder(default)]
     override_settings: Option<serde_json::Value>,
+    #[builder(default)]
     report_during_search_every: Option<f32>,
+    #[builder(default)]
     priority: Option<i32>,
+    #[builder(default)]
     priorities: Option<Vec<i32>>,
 }
 
