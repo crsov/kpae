@@ -16,6 +16,7 @@ use tokio_util::codec::{Encoder, FramedWrite};
 #[derive(Deserialize, Clone, Debug)]
 pub struct KataResponse;
 
+#[serde_with::skip_serializing_none]
 #[derive(Serialize, Clone, Debug, Builder)]
 #[builder(setter(into))]
 #[serde(rename_all = "camelCase")]
