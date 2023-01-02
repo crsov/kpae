@@ -108,6 +108,47 @@ pub enum Action {
     QueryVersion,
 }
 
+#[derive(Serialize, Clone, Debug)]
+pub enum KataAction {
+    Query {
+        #[serde(flatten)]
+        inner: KataQuery,
+    },
+    QueryVersion {
+        id: String,
+        action: ActionQueryVersion,
+    },
+    ClearCache {
+        id: String,
+        action: ActionClearCache,
+    },
+    #[serde(rename_all = "camelCase")]
+    Terminate {
+        id: String,
+        action: ActionTerminate,
+        terminate_id: String,
+        turn_numbers: Option<Vec<u16>>,
+    },
+}
+
+#[derive(Serialize, Clone, Debug)]
+pub enum ActionQueryVersion {
+    #[serde(rename = "query_version")]
+    ActionQueryVersion,
+}
+
+#[derive(Serialize, Clone, Debug)]
+pub enum ActionClearCache {
+    #[serde(rename = "clear_cache")]
+    ActionClearCache,
+}
+
+#[derive(Serialize, Clone, Debug)]
+pub enum ActionTerminate {
+    #[serde(rename = "terminate")]
+    ActionTerminate,
+}
+
 #[serde_with::skip_serializing_none]
 #[derive(Serialize, Clone, Debug, Builder)]
 #[builder(setter(into))]
@@ -205,16 +246,10 @@ pub enum Rules {
     AgaButton,
 }
 
-impl KataQuery {
-    pub fn builder() -> KataQueryBuilder {
-        Default::default()
-    }
-}
-
 pub fn start(
     cmd: &mut Command,
 ) -> (
-    impl Sink<KataQuery, Error = impl Error>,
+    impl Sink<KataAction, Error = impl Error>,
     impl Stream<Item = KataResponse>,
 ) {
     let mut handle = cmd
@@ -226,19 +261,19 @@ pub fn start(
     let stdout = BufReader::new(handle.stdout.take().unwrap());
 
     (
-        FramedWrite::new(stdin, KataQueryEncoder),
+        FramedWrite::new(stdin, KataActionEncoder),
         LinesStream::new(stdout.lines())
             .map(|x| x.unwrap())
             .map(|line| serde_json::from_str::<KataResponse>(&line).unwrap()),
     )
 }
 
-struct KataQueryEncoder;
+struct KataActionEncoder;
 
-impl Encoder<KataQuery> for KataQueryEncoder {
+impl Encoder<KataAction> for KataActionEncoder {
     type Error = std::io::Error;
 
-    fn encode(&mut self, item: KataQuery, dst: &mut BytesMut) -> Result<(), Self::Error> {
+    fn encode(&mut self, item: KataAction, dst: &mut BytesMut) -> Result<(), Self::Error> {
         dst.extend_from_slice(serde_json::to_vec(&item).unwrap().as_slice());
         dst.extend_from_slice(b"\n");
         Ok(())
