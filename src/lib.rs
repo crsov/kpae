@@ -16,23 +16,29 @@ use tokio_util::codec::{Encoder, FramedWrite};
 // Errors and warnings are currently not handled
 #[derive(Deserialize, Clone, Debug)]
 #[serde(untagged)]
-#[serde(rename_all = "camelCase")]
 pub enum KataResponse {
+    #[serde(rename_all = "camelCase")]
     Result {
-        pid: String,
+        id: String,
         is_during_search: bool,
         move_infos: Vec<MoveInfo>,
         root_info: RootInfo,
+        #[serde(default)]
         ownership: Option<Vec<f32>>,
+        #[serde(default)]
         ownership_stdev: Option<Vec<f32>>,
+        #[serde(default)]
         policy: Option<Vec<f32>>,
     },
+
+    #[serde(rename_all = "camelCase")]
     Resultless {
         id: String,
         is_during_search: bool,
         turn_number: u16,
         no_result: bool,
     },
+    #[serde(rename_all = "camelCase")]
     TerminateAck {
         id: String,
         action: ActionTerminate,
@@ -70,11 +76,15 @@ pub struct RootInfo {
     pub winrate: f32,
     pub score_lead: f32,
     pub score_selfplay: f32,
-    pub utility: f32,
+    #[serde(default)]
+    pub utility: Option<f32>,
     pub visits: u32,
-    pub this_hash: String,
-    pub sym_hash: String,
-    pub current_player: Player,
+    #[serde(default)]
+    pub this_hash: Option<String>,
+    #[serde(default)]
+    pub sym_hash: Option<String>,
+    #[serde(default)]
+    pub current_player: Option<Player>,
     // It is unclear then katago includes this fields in the response, and even are they optional,
     // so they are ignored currently
     //pub raw_st_wr_error: f32,
@@ -96,15 +106,20 @@ pub struct MoveInfo {
     pub lcb: f32,
     pub utility_lcb: f32,
     pub order: u16,
-    pub is_symmetry_of: String,
+    pub is_symmetry_of: Option<String>,
     pub pv: Vec<String>,
+    #[serde(default)]
     pub pv_visits: Option<Vec<u32>>,
+    #[serde(default)]
     pub pv_edge_visits: Option<Vec<u32>>,
+    #[serde(default)]
     pub ownership: Option<Vec<f32>>,
+    #[serde(default)]
     pub ownership_stdev: Option<Vec<f32>>,
 }
 
 #[derive(Serialize, Clone, Debug)]
+#[serde(untagged)]
 pub enum KataAction {
     Query {
         #[serde(flatten)]
