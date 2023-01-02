@@ -13,8 +13,100 @@ use serde::{Deserialize, Serialize};
 use tokio_stream::wrappers::LinesStream;
 use tokio_util::codec::{Encoder, FramedWrite};
 
+// Errors and warnings are currently not handled
 #[derive(Deserialize, Clone, Debug)]
-pub struct KataResponse;
+#[serde(untagged)]
+#[serde(rename_all = "camelCase")]
+pub enum KataResponse {
+    Result {
+        pid: String,
+        is_during_search: bool,
+        move_infos: Vec<MoveInfo>,
+        root_info: RootInfo,
+        ownership: Option<Vec<f32>>,
+        ownership_stdev: Option<Vec<f32>>,
+        policy: Option<Vec<f32>>,
+    },
+    Resultless {
+        id: String,
+        is_during_search: bool,
+        turn_number: u16,
+        no_result: bool,
+    },
+    TerminateAck {
+        id: String,
+        action: Action,
+        turn_numbers: Vec<u16>,
+        terminate_id: String,
+    },
+    Version {
+        action: Action,
+        git_hash: String,
+        id: String,
+        version: String,
+    },
+}
+
+#[derive(Clone, Deserialize, Debug)]
+pub enum GitHashOmitted {
+    #[serde(rename = "<omitted>")]
+    Omitted,
+}
+
+#[derive(Clone, Deserialize, Debug)]
+#[serde(untagged)]
+pub enum GitHash {
+    Omitted(GitHashOmitted),
+    Included(String),
+}
+
+#[derive(Deserialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct RootInfo {
+    pub winrate: f32,
+    pub score_lead: f32,
+    pub score_selfplay: f32,
+    pub utility: f32,
+    pub visits: u32,
+    pub this_hash: String,
+    pub sym_hash: String,
+    pub current_player: Player,
+    // It is unclear then katago includes this fields in the response, and even are they optional,
+    // so they are ignored currently
+    //pub raw_st_wr_error: f32,
+    //pub raw_st_score_error: f32,
+    //pub raw_var_time_left: u32,
+}
+
+#[derive(Deserialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct MoveInfo {
+    pub r#move: String,
+    pub winrate: f32,
+    pub visits: u32,
+    pub score_lead: f32,
+    pub score_selfplay: f32,
+    pub score_stdev: f32,
+    pub prior: f32,
+    pub utility: f32,
+    pub lcb: f32,
+    pub utility_lcb: f32,
+    pub order: u16,
+    pub is_symmetry_of: String,
+    pub pv: Vec<String>,
+    pub pv_visits: Option<Vec<u32>>,
+    pub pv_edge_visits: Option<Vec<u32>>,
+    pub ownership: Option<Vec<f32>>,
+    pub ownership_stdev: Option<Vec<f32>>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all = "snake_case")]
+pub enum Action {
+    Terminate,
+    ClearCache,
+    QueryVersion,
+}
 
 #[serde_with::skip_serializing_none]
 #[derive(Serialize, Clone, Debug, Builder)]
@@ -89,7 +181,7 @@ pub enum WhiteHandicapBonus {
     NMinusOne,
 }
 
-#[derive(Serialize, Debug, Clone)]
+#[derive(Serialize, Debug, Clone, Deserialize)]
 pub enum Player {
     #[serde(rename = "B")]
     Black,
