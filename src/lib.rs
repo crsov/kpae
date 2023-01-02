@@ -201,6 +201,12 @@ pub struct KataQuery {
     priorities: Option<Vec<i32>>,
 }
 
+impl KataQuery {
+    pub fn builder() -> KataQueryBuilder {
+        Default::default()
+    }
+}
+
 #[derive(Serialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct MoveGroup {
