@@ -148,6 +148,7 @@ impl Encoder<KataQuery> for KataQueryEncoder {
 
     fn encode(&mut self, item: KataQuery, dst: &mut BytesMut) -> Result<(), Self::Error> {
         dst.extend_from_slice(serde_json::to_vec(&item).unwrap().as_slice());
+        dst.extend_from_slice(b"\n");
         Ok(())
     }
 }
