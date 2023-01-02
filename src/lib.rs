@@ -35,15 +35,19 @@ pub enum KataResponse {
     },
     TerminateAck {
         id: String,
-        action: Action,
+        action: ActionTerminate,
         turn_numbers: Vec<u16>,
         terminate_id: String,
     },
     Version {
-        action: Action,
+        action: ActionQueryVersion,
         git_hash: String,
         id: String,
         version: String,
+    },
+    CacheCleared {
+        id: String,
+        action: ActionClearCache,
     },
 }
 
@@ -100,14 +104,6 @@ pub struct MoveInfo {
     pub ownership_stdev: Option<Vec<f32>>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
-#[serde(rename_all = "snake_case")]
-pub enum Action {
-    Terminate,
-    ClearCache,
-    QueryVersion,
-}
-
 #[derive(Serialize, Clone, Debug)]
 pub enum KataAction {
     Query {
@@ -131,19 +127,19 @@ pub enum KataAction {
     },
 }
 
-#[derive(Serialize, Clone, Debug)]
+#[derive(Serialize, Clone, Debug, Deserialize)]
 pub enum ActionQueryVersion {
     #[serde(rename = "query_version")]
     ActionQueryVersion,
 }
 
-#[derive(Serialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub enum ActionClearCache {
     #[serde(rename = "clear_cache")]
     ActionClearCache,
 }
 
-#[derive(Serialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum ActionTerminate {
     #[serde(rename = "terminate")]
     ActionTerminate,
