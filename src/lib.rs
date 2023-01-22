@@ -36,7 +36,7 @@ pub enum KataResponse {
         id: String,
         is_during_search: bool,
         turn_number: u16,
-        no_result: bool,
+        no_results: bool,
     },
     #[serde(rename_all = "camelCase")]
     TerminateAck {
