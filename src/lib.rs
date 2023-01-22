@@ -118,6 +118,7 @@ pub struct MoveInfo {
     pub ownership_stdev: Option<Vec<f32>>,
 }
 
+#[serde_with::skip_serializing_none]
 #[derive(Serialize, Clone, Debug)]
 #[serde(untagged)]
 pub enum KataAction {
