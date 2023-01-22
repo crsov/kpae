@@ -43,7 +43,7 @@ pub enum KataResponse {
         id: String,
         action: ActionTerminate,
         #[serde(default)]
-        turn_numbers: Option<Vec<u16>>,
+        turn_number: Option<u16>,
         terminate_id: String,
     },
     Version {
