@@ -42,7 +42,8 @@ pub enum KataResponse {
     TerminateAck {
         id: String,
         action: ActionTerminate,
-        turn_numbers: Vec<u16>,
+        #[serde(default)]
+        turn_numbers: Option<Vec<u16>>,
         terminate_id: String,
     },
     Version {
